@@ -1,0 +1,306 @@
+-- BoiDe$DayV1 - Mobile Script (Delta/CodeX/Arceus)
+local LP = game:GetService("Players").LocalPlayer
+local UIS = game:GetService("UserInputService")
+local TS = game:GetService("TweenService")
+local RS = game:GetService("RunService")
+local Cam = workspace.CurrentCamera
+
+-- ScreenGui
+local gui = Instance.new("ScreenGui")
+if gethui then gui.Parent = gethui() else gui.Parent = game.CoreGui end
+
+-- Toggle Button (góc trái)
+local ToggleBtn = Instance.new("TextButton", gui)
+ToggleBtn.Size = UDim2.new(0, 80, 0, 30)
+ToggleBtn.Position = UDim2.new(0, 10, 0, 10)
+ToggleBtn.Text = "BoiDe$DayV1"
+ToggleBtn.TextColor3 = Color3.fromRGB(0, 0, 0)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+ToggleBtn.TextSize = 11
+ToggleBtn.Font = Enum.Font.GothamBold
+ToggleBtn.ZIndex = 10
+Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(0, 8)
+
+-- Main Frame
+local Main = Instance.new("Frame", gui)
+Main.Size = UDim2.new(0.85, 0, 0.7, 0)
+Main.Position = UDim2.new(0.075, 0, 0.15, 0)
+Main.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+Main.BorderSizePixel = 0
+Main.Visible = false
+Main.ZIndex = 5
+local corner = Instance.new("UICorner", Main)
+corner.CornerRadius = UDim.new(0, 15)
+Instance.new("UIStroke", Main).Color = Color3.fromRGB(0, 255, 255)
+
+-- Title
+local Title = Instance.new("TextLabel", Main)
+Title.Size = UDim2.new(1, 0, 0, 35)
+Title.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+Title.Text = "BoiDe$DayV1"
+Title.TextColor3 = Color3.fromRGB(0, 255, 255)
+Title.TextSize = 16
+Title.Font = Enum.Font.GothamBold
+Instance.new("UICorner", Title).CornerRadius = UDim.new(0, 15)
+
+-- Close
+local Close = Instance.new("TextButton", Title)
+Close.Size = UDim2.new(0, 30, 0, 30)
+Close.Position = UDim2.new(1, -35, 0, 3)
+Close.Text = "X"
+Close.TextColor3 = Color3.fromRGB(255, 255, 255)
+Close.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+Close.TextSize = 16
+Close.Font = Enum.Font.GothamBold
+Instance.new("UICorner", Close).CornerRadius = UDim.new(0, 8)
+Close.MouseButton1Click:Connect(function() Main.Visible = false end)
+
+-- Scroll
+local Scroll = Instance.new("ScrollingFrame", Main)
+Scroll.Size = UDim2.new(1, -10, 1, -45)
+Scroll.Position = UDim2.new(0, 5, 0, 40)
+Scroll.BackgroundTransparency = 1
+Scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+Scroll.ScrollBarThickness = 6
+Scroll.ScrollBarImageColor3 = Color3.fromRGB(0, 255, 255)
+Scroll.ZIndex = 5
+
+local List = Instance.new("UIListLayout", Scroll)
+List.Padding = UDim.new(0, 6)
+List.SortOrder = Enum.SortOrder.LayoutOrder
+
+-- ===== FUNCTIONS =====
+function Section(text)
+    local s = Instance.new("Frame", Scroll)
+    s.Size = UDim2.new(1, 0, 0, 25)
+    s.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+    s.BackgroundTransparency = 0.92
+    Instance.new("UICorner", s).CornerRadius = UDim.new(0, 6)
+    local l = Instance.new("TextLabel", s)
+    l.Size = UDim2.new(1, 0, 1, 0)
+    l.Text = "  " .. text
+    l.TextColor3 = Color3.fromRGB(0, 255, 255)
+    l.TextSize = 13
+    l.Font = Enum.Font.GothamBold
+    l.TextXAlignment = Enum.TextXAlignment.Left
+    l.BackgroundTransparency = 1
+    return s
+end
+
+function Toggle(text, default, callback)
+    local t = Instance.new("Frame", Scroll)
+    t.Size = UDim2.new(1, 0, 0, 38)
+    t.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    Instance.new("UICorner", t).CornerRadius = UDim.new(0, 8)
+    
+    local l = Instance.new("TextLabel", t)
+    l.Size = UDim2.new(0, 160, 1, 0)
+    l.Position = UDim2.new(0, 10, 0, 0)
+    l.Text = text
+    l.TextColor3 = Color3.fromRGB(255, 255, 255)
+    l.TextSize = 13
+    l.Font = Enum.Font.GothamMedium
+    l.TextXAlignment = Enum.TextXAlignment.Left
+    l.BackgroundTransparency = 1
+    
+    local b = Instance.new("Frame", t)
+    b.Size = UDim2.new(0, 42, 0, 22)
+    b.Position = UDim2.new(1, -52, 0.5, -11)
+    b.BackgroundColor3 = default and Color3.fromRGB(0, 255, 255) or Color3.fromRGB(60, 60, 65)
+    Instance.new("UICorner", b).CornerRadius = UDim.new(1, 0)
+    
+    local d = Instance.new("Frame", b)
+    d.Size = UDim2.new(0, 16, 0, 16)
+    d.Position = default and UDim2.new(1, -19, 0.5, -8) or UDim2.new(0, 3, 0.5, -8)
+    d.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Instance.new("UICorner", d).CornerRadius = UDim.new(1, 0)
+    
+    local on = default
+    b.InputBegan:Connect(function(i)
+        if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+            on = not on
+            TS:Create(b, TweenInfo.new(0.2), {BackgroundColor3 = on and Color3.fromRGB(0, 255, 255) or Color3.fromRGB(60, 60, 65)}):Play()
+            TS:Create(d, TweenInfo.new(0.2), {Position = on and UDim2.new(1, -19, 0.5, -8) or UDim2.new(0, 3, 0.5, -8)}):Play()
+            callback(on)
+        end
+    end)
+    return t
+end
+
+function Slider(text, min, max, default, callback)
+    local s = Instance.new("Frame", Scroll)
+    s.Size = UDim2.new(1, 0, 0, 55)
+    s.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    Instance.new("UICorner", s).CornerRadius = UDim.new(0, 8)
+    
+    local l = Instance.new("TextLabel", s)
+    l.Size = UDim2.new(1, -20, 0, 20)
+    l.Position = UDim2.new(0, 10, 0, 3)
+    l.Text = text .. ": " .. default
+    l.TextColor3 = Color3.fromRGB(255, 255, 255)
+    l.TextSize = 12
+    l.Font = Enum.Font.GothamMedium
+    l.TextXAlignment = Enum.TextXAlignment.Left
+    l.BackgroundTransparency = 1
+    
+    local bar = Instance.new("Frame", s)
+    bar.Size = UDim2.new(1, -20, 0, 6)
+    bar.Position = UDim2.new(0, 10, 0, 30)
+    bar.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
+    Instance.new("UICorner", bar).CornerRadius = UDim.new(0, 3)
+    
+    local fill = Instance.new("Frame", bar)
+    fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
+    fill.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+    Instance.new("UICorner", fill).CornerRadius = UDim.new(0, 3)
+    
+    local function update(i)
+        local rel = math.clamp((i.Position.X - bar.AbsolutePosition.X) / bar.AbsoluteSize.X, 0, 1)
+        local val = math.floor((min + (max - min) * rel) * 100) / 100
+        l.Text = text .. ": " .. val
+        fill.Size = UDim2.new(rel, 0, 1, 0)
+        callback(val)
+    end
+    
+    bar.InputBegan:Connect(function(i)
+        if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+            update(i)
+            local con
+            con = UIS.InputChanged:Connect(function(c)
+                if c.UserInputType == Enum.UserInputType.MouseMovement or c.UserInputType == Enum.UserInputType.Touch then
+                    update(c)
+                end
+            end)
+            UIS.InputEnded:Connect(function(e)
+                if e.UserInputType == Enum.UserInputType.MouseButton1 or e.UserInputType == Enum.UserInputType.Touch then
+                    con:Disconnect()
+                end
+            end)
+        end
+    end)
+    return s
+end
+
+-- ===== FEATURES =====
+local flying, noclip = false, false
+local flySpeed = 50
+
+Section("🚀 Movement")
+
+Toggle("Enable Fly", false, function(v)
+    flying = v
+    local char = LP.Character
+    if v and char and char:FindFirstChild("HumanoidRootPart") then
+        local gyro = Instance.new("BodyGyro", char.HumanoidRootPart)
+        gyro.P = 9e4
+        gyro.MaxTorque = Vector3.new(9e4, 9e4, 9e4)
+        local vel = Instance.new("BodyVelocity", char.HumanoidRootPart)
+        vel.MaxForce = Vector3.new(9e4, 9e4, 9e4)
+        
+        local con
+        con = RS.RenderStepped:Connect(function()
+            if not flying or not char.Parent then
+                gyro:Destroy()
+                vel:Destroy()
+                con:Disconnect()
+                return
+            end
+            gyro.CFrame = Cam.CFrame
+            local move = Vector3.new()
+            if UIS:IsKeyDown(Enum.KeyCode.W) then move += Cam.CFrame.LookVector end
+            if UIS:IsKeyDown(Enum.KeyCode.S) then move -= Cam.CFrame.LookVector end
+            if UIS:IsKeyDown(Enum.KeyCode.A) then move -= Cam.CFrame.RightVector end
+            if UIS:IsKeyDown(Enum.KeyCode.D) then move += Cam.CFrame.RightVector end
+            if UIS:IsKeyDown(Enum.KeyCode.Space) then move += Vector3.new(0, 1, 0) end
+            if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then move -= Vector3.new(0, 1, 0) end
+            if move.Magnitude > 0 then vel.Velocity = move.Unit * flySpeed end
+        end)
+    end
+end)
+
+Slider("Fly Speed", 10, 500, 50, function(v) flySpeed = v end)
+
+Toggle("Noclip", false, function(v)
+    noclip = v
+    if v then
+        local con
+        con = RS.Stepped:Connect(function()
+            if not noclip then con:Disconnect() return end
+            if LP.Character then
+                for _, p in ipairs(LP.Character:GetDescendants()) do
+                    if p:IsA("BasePart") then p.CanCollide = false end
+                end
+            end
+        end)
+    end
+end)
+
+Slider("Walk Speed", 16, 500, 16, function(v)
+    local char = LP.Character
+    if char and char:FindFirstChild("Humanoid") then
+        char.Humanoid.WalkSpeed = v
+    end
+end)
+
+Slider("Jump Power", 50, 500, 50, function(v)
+    local char = LP.Character
+    if char and char:FindFirstChild("Humanoid") then
+        char.Humanoid.JumpPower = v
+    end
+end)
+
+Section("🌍 World")
+
+Slider("Gravity", 0, 500, 196.2, function(v)
+    workspace.Gravity = v
+end)
+
+Slider("Brightness", 0, 10, 3, function(v)
+    game:GetService("Lighting").Brightness = v
+end)
+
+Slider("FOV", 30, 120, 70, function(v)
+    Cam.FieldOfView = v
+end)
+
+Section("⏱️ Time")
+
+Slider("Game Speed", 0.1, 10, 1, function(v)
+    pcall(function() RS:SetTimeScale(v) end)
+end)
+
+-- ===== TOGGLE MENU =====
+ToggleBtn.MouseButton1Click:Connect(function()
+    Main.Visible = not Main.Visible
+end)
+
+-- Mobile touch nút X cũng đóng menu
+Close.MouseButton1Click:Connect(function()
+    Main.Visible = false
+end)
+
+-- Respawn
+LP.CharacterAdded:Connect(function(char)
+    wait(0.5)
+    if char:FindFirstChild("Humanoid") then
+        char.Humanoid.WalkSpeed = 16
+        char.Humanoid.JumpPower = 50
+    end
+    if noclip then
+        for _, p in ipairs(char:GetDescendants()) do
+            if p:IsA("BasePart") then p.CanCollide = false end
+        end
+    end
+end)
+
+-- Scroll auto-size
+Scroll.ChildAdded:Connect(function()
+    local total = 0
+    for _, c in ipairs(Scroll:GetChildren()) do
+        if c:IsA("Frame") then total = total + c.AbsoluteSize.Y + 6 end
+    end
+    Scroll.CanvasSize = UDim2.new(0, 0, 0, total + 10)
+end)
+
+print("BoiDe$DayV1 Mobile Loaded!")
+print("Tap 'BoiDe$DayV1' button to open menu")
